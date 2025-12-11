@@ -32,7 +32,7 @@ private double cups;
     }
 
 
-
+    // setter is a mutator
     // Write your 5 getter methods here
     // getName() - returns String
     public String getName(){
@@ -64,6 +64,10 @@ private double cups;
     // Should return a String with all the cereal data
     // Example: "100% Bran - Calories: 70, Fiber: 10g, Carbs: 5g, Serving: 0.33 cups"
     @Override
+    public String toString(){
+        return name + "- Calories: " + calories + ", Fiber: " + fiber + "g, Carbs: " + carbohydrates + "g, Serving: " + cups +"cups";
+
+    }
 
 
 
