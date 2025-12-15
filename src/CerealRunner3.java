@@ -31,16 +31,16 @@ public class CerealRunner3 {
      * @param max maximum carbs per cup (inclusive)
      * @return ArrayList of cereals meeting criteria
      */
+
     public static ArrayList<Cereal> filterCarbsPerCup(int min, int max) {
         ArrayList<Cereal> result = new ArrayList<>();
         double carbsPerCup;
-        for(int i = 0; i<cereals.size(); i++){
-            carbsPerCup = 
-                }
+        for(int i = 0; i < cereals.size(); i++){
+            carbsPerCup = cereals.get(i).getCarbohydrates() / cereals.get(i).getCups();
+            if(carbsPerCup <= max && carbsPerCup >= min) result.add(cereals.get(i));
+        }
 
-
-
-        return null;  // Replace with your code
+        return result;  // Replace with your code
     }
 
     /**
@@ -61,11 +61,17 @@ public class CerealRunner3 {
      * @return Cereal with highest fiber percentage, or null if empty
      */
     public static Cereal highestPercentFiber() {
-
-
-
-
-        return null;  // Replace with your code
+        Cereal bestCereal = cereals.get(0);
+        double bestPercent = bestCereal.getFiber()/bestCereal.getCalories();
+        double percentFiber;
+        for(int i = 0 ; i<cereals.size(); i++){
+            percentFiber = cereals.get(i).getFiber()/cereals.get(i).getCalories();
+            if(percentFiber > bestPercent){
+                bestPercent = percentFiber;
+                bestCereal = cereals.get(i);
+            }
+        }
+        return bestCereal;  // Replace with your code
     }
 
     /**
@@ -77,10 +83,10 @@ public class CerealRunner3 {
      * @return net carbs
      */
     public static double findNetCarbs(Cereal c) {
+        int netCarbs = c.getCarbohydrates()- c.getFiber();
 
 
-
-        return 0;  // Replace with your code
+        return netCarbs;  // Replace with your code
     }
 
     // ========================================================================
