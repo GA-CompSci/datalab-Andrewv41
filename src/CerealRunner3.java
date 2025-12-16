@@ -1,7 +1,11 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.swing.SwingUtilities;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 /**
  * CerealRunner3 - Data Analysis Methods
@@ -35,12 +39,13 @@ public class CerealRunner3 {
     public static ArrayList<Cereal> filterCarbsPerCup(int min, int max) {
         ArrayList<Cereal> result = new ArrayList<>();
         double carbsPerCup;
-        for(int i = 0; i < cereals.size(); i++){
+        for (int i = 0; i < cereals.size(); i++) {
             carbsPerCup = cereals.get(i).getCarbohydrates() / cereals.get(i).getCups();
-            if(carbsPerCup <= max && carbsPerCup >= min) result.add(cereals.get(i));
+            if (carbsPerCup <= max && carbsPerCup >= min)
+                result.add(cereals.get(i));
         }
 
-        return result;  // Replace with your code
+        return result; // Replace with your code
     }
 
     /**
@@ -62,16 +67,16 @@ public class CerealRunner3 {
      */
     public static Cereal highestPercentFiber() {
         Cereal bestCereal = cereals.get(0);
-        double bestPercent = bestCereal.getFiber()/bestCereal.getCalories();
+        double bestPercent = bestCereal.getFiber() / bestCereal.getCalories();
         double percentFiber;
-        for(int i = 0 ; i<cereals.size(); i++){
-            percentFiber = cereals.get(i).getFiber()/cereals.get(i).getCalories();
-            if(percentFiber > bestPercent){
+        for (int i = 0; i < cereals.size(); i++) {
+            percentFiber = cereals.get(i).getFiber() / cereals.get(i).getCalories();
+            if (percentFiber > bestPercent) {
                 bestPercent = percentFiber;
                 bestCereal = cereals.get(i);
             }
         }
-        return bestCereal;  // Replace with your code
+        return bestCereal; // Replace with your code
     }
 
     /**
@@ -83,10 +88,30 @@ public class CerealRunner3 {
      * @return net carbs
      */
     public static double findNetCarbs(Cereal c) {
-        int netCarbs = c.getCarbohydrates()- c.getFiber();
+        double netCarbs = c.getCarbohydrates() - c.getFiber();
 
+        return netCarbs; // Replace with your code
+    }
 
-        return netCarbs;  // Replace with your code
+    public static void displayNetCarbsGraph() {
+        System.out.println("\n=== Net Carbs Graph ===");
+
+        if (cereals == null || cereals.size() == 0) {
+            System.out.println("No cereal data loaded.");
+            return;
+        }
+
+        for (int i = 0; i < 5 && i < cereals.size(); i++) {
+            Cereal c = cereals.get(i);
+            int netCarbs = (int) findNetCarbs(c);
+
+            System.out.printf("%-25s | ", c.getName());
+
+            for (int j = 0; j < netCarbs; j++) {
+                System.out.print("*");
+            }
+            System.out.println(" (" + netCarbs + ")");
+        }
     }
 
     // ========================================================================
@@ -104,6 +129,11 @@ public class CerealRunner3 {
         try {
             File cerealFile = new File("cerealSubset.csv");
             Scanner fileScanner = new Scanner(cerealFile);
+
+            if (fileScanner.hasNextLine()) {
+                fileScanner.nextLine();
+            
+}
 
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
@@ -160,14 +190,50 @@ public class CerealRunner3 {
         System.out.println("\n=== Data Validation: Testing Specific Cereals ===");
         for (Cereal c : cereals) {
             if (c.getName().equals("All-Bran with Extra Fiber") ||
-                c.getName().equals("Apple Jacks") ||
-                c.getName().equals("Cocoa Puffs")) {
+                    c.getName().equals("Apple Jacks") ||
+                    c.getName().equals("Cocoa Puffs")) {
                 System.out.println("\nCereal: " + c.getName() + ", NetCarbs: " + findNetCarbs(c));
             }
         }
+        displayNetCarbsGraph();
+
+        exportToCSV("cerealSubset.csv");
+
+        // Then open the GUI
+        SwingUtilities.invokeLater(() -> {
+            CerealGraph.showGraph(cereals);
+        });
 
         System.out.println("\n--- Reflection Questions ---");
         System.out.println("1. Which cereal has negative net carbs? Why is this impossible?");
         System.out.println("2. What does this tell you about the quality of this data set?");
     }
+
+    public static void exportToCSV(String filename) {
+        if (cereals == null || cereals.size() == 0) {
+            System.out.println("No cereal data to export.");
+            return;
+        }
+
+        try (PrintWriter pw = new PrintWriter(new File(filename))) {
+            // Optional: write header
+            pw.println("name,calories,fiber,carbohydrates,cups");
+
+            // Write each cereal
+            for (Cereal c : cereals) {
+                pw.printf("%s,%d,%d,%d,%.2f%n",
+                        c.getName(),
+                        c.getCalories(),
+                        c.getFiber(),
+                        c.getCarbohydrates(),
+                        c.getCups());
+            }
+
+            System.out.println("Data exported to " + filename);
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Error writing to file: " + filename);
+        }
+    }
+
 }
